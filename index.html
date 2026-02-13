@@ -3,103 +3,174 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kitty Explains</title>
+  <title>Kitty Explains 🐱</title>
 
   <style>
-    *{box-sizing:border-box}
+    :root{
+      --bg1:#fbfbfd;
+      --bg2:#f4f4f7;
+      --card:#ffffff;
+      --ink:#121316;
+      --muted:#6b7280;
+      --border:rgba(0,0,0,.08);
+      --shadow: 0 18px 60px rgba(0,0,0,.10);
+      --shadow2: 0 10px 26px rgba(0,0,0,.08);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:#fafafa;
-      color:#111;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(255, 192, 203, .25), transparent 60%),
+        radial-gradient(900px 500px at 80% 0%, rgba(199, 210, 254, .35), transparent 60%),
+        radial-gradient(900px 500px at 60% 90%, rgba(209, 250, 229, .30), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
     }
 
+    /* Top bar */
     header{
-      position:sticky;
-      top:0;
-      z-index:10;
-      background:rgba(255,255,255,.82);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
     }
-
     .bar{
-      max-width:1100px;
-      margin:0 auto;
-      padding:12px 16px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px 16px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
     }
-
-    .leftTitle{
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,192,203,.95), rgba(199,210,254,.7) 45%, rgba(209,250,229,.8) 85%);
+      box-shadow: 0 10px 26px rgba(0,0,0,.08);
+      border: 1px solid rgba(255,255,255,.6);
+    }
+    .titleWrap{
       display:flex;
       flex-direction:column;
-      line-height:1.05;
+      gap:2px;
+      min-width:0;
     }
-    .leftTitle strong{font-size:15px}
-    .leftTitle span{font-size:12px;color:#666}
+    .titleWrap strong{
+      font-size:15px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .titleWrap span{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
 
     .controls{
       display:flex;
-      gap:8px;
       align-items:center;
+      gap:10px;
       flex-wrap:wrap;
       justify-content:flex-end;
     }
 
-    button{
-      border:1px solid rgba(0,0,0,.14);
-      background:#fff;
-      border-radius:999px;
-      padding:8px 12px;
-      font-weight:700;
-      cursor:pointer;
+    .btn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+      transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
     }
-    button:active{transform:translateY(1px)}
+    .btn:hover{
+      background:#fff;
+      box-shadow: var(--shadow2);
+    }
+    .btn:active{ transform: translateY(1px); }
 
     .pill{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
-      border-radius:999px;
-      padding:8px 10px;
-      font-weight:800;
-      font-size:12px;
-      display:flex;
-      align-items:center;
-      gap:8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--muted);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
     }
-    .pill input{transform:scale(1.05)}
 
     main{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px 16px 30px;
+      max-width:1120px;
+      margin: 0 auto;
+      padding: 20px 16px 36px;
       display:grid;
       grid-template-columns: 1fr;
-      gap:16px;
+      gap: 16px;
     }
 
+    /* Card stage */
     .stage{
-      background:#fff;
-      border-radius:18px;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
-      touch-action:pan-y;
+      position:relative;
     }
 
-    /* ✅ smaller reel card */
+    /* Subtle top gradient inside card */
+    .stage::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(800px 380px at 10% 0%, rgba(255,192,203,.25), transparent 60%),
+        radial-gradient(800px 380px at 90% 0%, rgba(199,210,254,.28), transparent 60%);
+      pointer-events:none;
+      opacity:.7;
+    }
+
+    .stageInner{
+      position:relative;
+      padding: 16px 16px 14px;
+      display:grid;
+      gap: 14px;
+    }
+
+    /* ✅ Perfect size you liked */
     .viewport{
       width:100%;
-      max-width:420px;  /* change to 380/340 if you want smaller */
-      margin:14px auto 0;
-      aspect-ratio:9/16;
+      max-width:420px;
+      margin: 6px auto 0;
+      aspect-ratio: 9 / 16;
       position:relative;
-      background:#fff;
-      border-radius:16px;
+      border-radius: 18px;
       overflow:hidden;
-      border:1px solid rgba(0,0,0,.06);
+      background:#fff;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 18px 50px rgba(0,0,0,.10);
+      touch-action: pan-y;
     }
 
     .slide{
@@ -118,112 +189,119 @@
       transform: translateY(0);
       z-index:2;
     }
-
     .slide img{
       width:100%;
       height:100%;
-      object-fit:contain;
+      object-fit: contain;
       background:#fff;
       display:block;
     }
 
-    .metaRow{
+    .bottomRow{
       display:flex;
-      justify-content:center;
-      padding:12px 12px 8px;
-      color:#666;
-      font-size:12px;
-      font-weight:700;
+      align-items:center;
+      justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
+      padding: 0 4px;
     }
 
+    .hint{
+      font-size:12px;
+      color: var(--muted);
+      font-weight:700;
+    }
+
+    /* Dots */
     .dots{
       display:flex;
       justify-content:center;
-      gap:8px;
-      padding:10px 12px 14px;
-      border-top:1px solid rgba(0,0,0,.06);
-      background:rgba(250,250,250,.75);
+      gap:10px;
+      padding: 10px 12px 14px;
+      border-top: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.55);
       flex-wrap:wrap;
     }
     .dot{
-      width:10px;height:10px;border-radius:50%;
-      border:1px solid #999;
-      background:#fff;
+      width:10px; height:10px;
+      border-radius:999px;
+      border: 1px solid rgba(0,0,0,.22);
+      background: rgba(255,255,255,.9);
       cursor:pointer;
       padding:0;
+      transition: transform .12s ease, background .2s ease;
     }
-    .dot.active{background:#111;border-color:#111}
+    .dot:hover{ transform: scale(1.1); }
+    .dot.active{
+      background: var(--ink);
+      border-color: var(--ink);
+    }
 
-    .hint{
-      max-width:1100px;
-      margin:0 auto;
-      padding:0 16px 20px;
-      color:#777;
+    footer{
+      max-width:1120px;
+      margin: 0 auto;
+      padding: 0 16px 26px;
+      color: var(--muted);
       font-size:12px;
-      line-height:1.4;
+      font-weight:700;
+      text-align:center;
+    }
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      background: rgba(255,255,255,.7);
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,.06);
     }
 
-    /* slightly nicer on big screens */
-    @media (min-width: 900px){
-      .viewport{max-width:440px;}
+    @media (min-width: 860px){
+      main{ padding-top: 26px; }
     }
   </style>
 </head>
-<body>
 
+<body>
 <header>
   <div class="bar">
-    <div class="leftTitle">
-      <strong>Kitty Explains 🐱</strong>
-      <span>viral mode: autoplay + loop + progress + swipe</span>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div class="titleWrap">
+        <strong>Kitty Explains</strong>
+        <span>Swipe · Pfeile · Dots · GitHub Pages ready</span>
+      </div>
     </div>
 
     <div class="controls">
-      <button id="prevBtn" aria-label="Vorherige Slide">←</button>
-      <span id="counter" style="font-weight:800">1 / 9</span>
-      <button id="nextBtn" aria-label="Nächste Slide">→</button>
-
-      <label class="pill" title="Autoplay wie TikTok">
-        <input id="autoplayToggle" type="checkbox" checked />
-        Autoplay
-      </label>
-
-      <label class="pill" title="Zeit pro Slide">
-        Speed
-        <select id="speedSelect" style="border:0;background:transparent;font-weight:900;cursor:pointer">
-          <option value="1800">1.8s</option>
-          <option value="2500" selected>2.5s</option>
-          <option value="3500">3.5s</option>
-          <option value="5000">5.0s</option>
-        </select>
-      </label>
+      <button class="btn" id="prevBtn" aria-label="Vorherige Slide">←</button>
+      <span class="pill" id="counter">1 / 9</span>
+      <button class="btn" id="nextBtn" aria-label="Nächste Slide">→</button>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="stage" id="stage">
-    <div class="viewport" id="viewport"></div>
+  <section class="stage" id="stage">
+    <div class="stageInner">
+      <div class="viewport" id="viewport" aria-label="Slides"></div>
 
-    <div class="metaRow">
-      <span id="status">Autoplay läuft…</span>
+      <div class="bottomRow">
+        <div class="hint">
+          Assets: <code>/assets/1.png</code> … <code>/assets/9.png</code>
+        </div>
+        <div class="hint">
+          Tipp: <strong>←/→</strong> oder wischen
+        </div>
+      </div>
     </div>
 
-    <!-- progress bar (viral feel) -->
-    <div style="height:3px;background:rgba(0,0,0,.06);">
-      <div id="progress" style="height:3px;width:0;background:#111;transition:none;"></div>
-    </div>
-
-    <div class="dots" id="dots"></div>
-  </div>
+    <div class="dots" id="dots" aria-label="Slide navigation"></div>
+  </section>
 </main>
 
-<div class="hint">
-  Repo: <code>index.html</code> + <code>/assets/1.png</code> … <code>/assets/9.png</code>.<br/>
-  Tipp: Wenn du es NOCH kleiner willst: im CSS <code>.viewport max-width</code> auf 380 oder 340 setzen.
-</div>
+<footer>
+  made for tiny wholesome internet vibes 🩷
+</footer>
 
 <script>
   // Auto-load assets/1.png … 9.png
@@ -235,25 +313,15 @@
   const viewport = document.getElementById("viewport");
   const dots = document.getElementById("dots");
   const counter = document.getElementById("counter");
-  const statusEl = document.getElementById("status");
-  const progressEl = document.getElementById("progress");
-
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const autoplayToggle = document.getElementById("autoplayToggle");
-  const speedSelect = document.getElementById("speedSelect");
 
   let current = 0;
-  let autoplayTimer = null;
-  let raf = null;
-  let slideStart = 0;
 
   function placeholderDataUri(id){
-    return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600">
         <rect width="100%" height="100%" fill="#ffffff"/>
         <text x="50%" y="50%" text-anchor="middle"
-          font-family="Arial" font-size="38" fill="#999">
+          font-family="Arial" font-size="36" font-weight="700" fill="#999">
           Missing: assets/${id}.png
         </text>
       </svg>
@@ -261,134 +329,65 @@
   }
 
   function render(){
-    viewport.innerHTML="";
-    dots.innerHTML="";
+    viewport.innerHTML = "";
+    dots.innerHTML = "";
 
-    slides.forEach((s,i)=>{
+    slides.forEach((s, i) => {
       const slide = document.createElement("div");
-      slide.className = "slide" + (i===current ? " active" : "");
+      slide.className = "slide" + (i === current ? " active" : "");
 
       const img = document.createElement("img");
       img.src = s.src;
       img.alt = `Slide ${s.id}`;
-      img.onerror = () => img.src = placeholderDataUri(s.id);
+      img.onerror = () => { img.src = placeholderDataUri(s.id); };
 
       slide.appendChild(img);
       viewport.appendChild(slide);
 
       const dot = document.createElement("button");
-      dot.className = "dot" + (i===current ? " active" : "");
+      dot.className = "dot" + (i === current ? " active" : "");
       dot.type = "button";
       dot.ariaLabel = `Go to slide ${i+1}`;
-      dot.onclick = () => go(i, true);
+      dot.addEventListener("click", () => go(i));
       dots.appendChild(dot);
     });
 
-    counter.textContent = `${current+1} / ${slides.length}`;
+    counter.textContent = `${current + 1} / ${slides.length}`;
   }
 
-  function go(i, userAction=false){
+  function go(i){
     current = (i + slides.length) % slides.length;
     render();
-
-    // reset progress timing
-    slideStart = performance.now();
-    progressEl.style.width = "0%";
-    if(userAction) kickAutoplay(); // keep it feeling "tiktok" after interactions
-  }
-
-  function next(user=false){ go(current+1, user); }
-  function prev(user=false){ go(current-1, user); }
-
-  // --- Viral mode: autoplay + loop + progress bar ---
-  function getSpeedMs(){
-    return Number(speedSelect.value || 2500);
-  }
-
-  function stopAutoplay(){
-    if(autoplayTimer){ clearInterval(autoplayTimer); autoplayTimer=null; }
-    if(raf){ cancelAnimationFrame(raf); raf=null; }
-    progressEl.style.width = "0%";
-    statusEl.textContent = "Autoplay pausiert.";
-  }
-
-  function startAutoplay(){
-    stopAutoplay();
-    slideStart = performance.now();
-    statusEl.textContent = "Autoplay läuft…";
-
-    const speed = getSpeedMs();
-
-    autoplayTimer = setInterval(()=> next(false), speed);
-
-    const tick = (t)=>{
-      const elapsed = t - slideStart;
-      const pct = Math.min(100, (elapsed / speed) * 100);
-      progressEl.style.width = pct + "%";
-
-      // if we advanced via timer, reset slideStart in render() is not called automatically,
-      // so we detect loop by checking pct == 100 and then reset on next frame
-      if(pct >= 100){
-        slideStart = t;
-        progressEl.style.width = "0%";
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-  }
-
-  function kickAutoplay(){
-    if(!autoplayToggle.checked) return;
-    startAutoplay();
   }
 
   // Buttons
-  prevBtn.onclick = ()=> prev(true);
-  nextBtn.onclick = ()=> next(true);
+  document.getElementById("prevBtn").addEventListener("click", () => go(current - 1));
+  document.getElementById("nextBtn").addEventListener("click", () => go(current + 1));
 
   // Keyboard
-  window.addEventListener("keydown", e=>{
-    if(e.key==="ArrowRight") next(true);
-    if(e.key==="ArrowLeft") prev(true);
-    if(e.key===" ") {
-      e.preventDefault();
-      autoplayToggle.checked = !autoplayToggle.checked;
-      autoplayToggle.dispatchEvent(new Event("change"));
-    }
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowRight") go(current + 1);
+    if(e.key === "ArrowLeft") go(current - 1);
   });
 
   // Swipe
-  const stage = document.getElementById("stage");
   let startX = null;
-  viewport.addEventListener("touchstart", e=>{
-    if(!e.touches || e.touches.length!==1) return;
+  viewport.addEventListener("touchstart", (e) => {
+    if(!e.touches || e.touches.length !== 1) return;
     startX = e.touches[0].clientX;
   }, {passive:true});
 
-  viewport.addEventListener("touchend", e=>{
-    if(startX==null) return;
+  viewport.addEventListener("touchend", (e) => {
+    if(startX == null) return;
     const endX = e.changedTouches[0].clientX;
     const dx = endX - startX;
     startX = null;
     if(Math.abs(dx) > 40){
-      dx < 0 ? next(true) : prev(true);
+      dx < 0 ? go(current + 1) : go(current - 1);
     }
   });
 
-  // Toggle autoplay
-  autoplayToggle.addEventListener("change", ()=>{
-    if(autoplayToggle.checked) startAutoplay();
-    else stopAutoplay();
-  });
-
-  // Speed change restarts autoplay if on
-  speedSelect.addEventListener("change", ()=>{
-    if(autoplayToggle.checked) startAutoplay();
-  });
-
-  // Init
   render();
-  if(autoplayToggle.checked) startAutoplay();
 </script>
 </body>
 </html>
