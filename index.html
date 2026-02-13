@@ -7,7 +7,6 @@
 
   <style>
     *{box-sizing:border-box}
-
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
@@ -18,70 +17,105 @@
     header{
       position:sticky;
       top:0;
-      background:rgba(255,255,255,.8);
+      z-index:10;
+      background:rgba(255,255,255,.82);
       backdrop-filter:blur(10px);
       border-bottom:1px solid rgba(0,0,0,.06);
-      z-index:10;
     }
 
     .bar{
-      max-width:900px;
+      max-width:1100px;
       margin:0 auto;
       padding:12px 16px;
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
     }
+
+    .leftTitle{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+    }
+    .leftTitle strong{font-size:15px}
+    .leftTitle span{font-size:12px;color:#666}
 
     .controls{
       display:flex;
       gap:8px;
       align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     button{
-      border:1px solid rgba(0,0,0,.15);
-      background:white;
+      border:1px solid rgba(0,0,0,.14);
+      background:#fff;
       border-radius:999px;
       padding:8px 12px;
-      font-weight:600;
+      font-weight:700;
       cursor:pointer;
     }
+    button:active{transform:translateY(1px)}
+
+    .pill{
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:800;
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill input{transform:scale(1.05)}
 
     main{
-      max-width:900px;
+      max-width:1100px;
       margin:0 auto;
-      padding:20px 16px;
+      padding:18px 16px 30px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
     }
 
     .stage{
-      background:white;
+      background:#fff;
       border-radius:18px;
       box-shadow:0 10px 30px rgba(0,0,0,.08);
       overflow:hidden;
+      touch-action:pan-y;
     }
 
-    /* 9:16 */
+    /* ✅ smaller reel card */
     .viewport{
       width:100%;
+      max-width:420px;  /* change to 380/340 if you want smaller */
+      margin:14px auto 0;
       aspect-ratio:9/16;
       position:relative;
-      background:white;
+      background:#fff;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(0,0,0,.06);
     }
 
     .slide{
       position:absolute;
       inset:0;
       opacity:0;
-      transition:.25s ease;
+      transform: translateY(8px);
+      transition: opacity .22s ease, transform .22s ease;
       display:flex;
       align-items:center;
       justify-content:center;
+      background:#fff;
     }
-
     .slide.active{
       opacity:1;
+      transform: translateY(0);
       z-index:2;
     }
 
@@ -89,29 +123,51 @@
       width:100%;
       height:100%;
       object-fit:contain;
-      background:white;
+      background:#fff;
+      display:block;
+    }
+
+    .metaRow{
+      display:flex;
+      justify-content:center;
+      padding:12px 12px 8px;
+      color:#666;
+      font-size:12px;
+      font-weight:700;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
     .dots{
       display:flex;
       justify-content:center;
       gap:8px;
-      padding:12px;
+      padding:10px 12px 14px;
       border-top:1px solid rgba(0,0,0,.06);
+      background:rgba(250,250,250,.75);
+      flex-wrap:wrap;
     }
-
     .dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
+      width:10px;height:10px;border-radius:50%;
       border:1px solid #999;
-      background:white;
+      background:#fff;
       cursor:pointer;
+      padding:0;
+    }
+    .dot.active{background:#111;border-color:#111}
+
+    .hint{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 16px 20px;
+      color:#777;
+      font-size:12px;
+      line-height:1.4;
     }
 
-    .dot.active{
-      background:#111;
-      border-color:#111;
+    /* slightly nicer on big screens */
+    @media (min-width: 900px){
+      .viewport{max-width:440px;}
     }
   </style>
 </head>
@@ -119,25 +175,58 @@
 
 <header>
   <div class="bar">
-    <strong>Kitty Explains 🐱</strong>
+    <div class="leftTitle">
+      <strong>Kitty Explains 🐱</strong>
+      <span>viral mode: autoplay + loop + progress + swipe</span>
+    </div>
 
     <div class="controls">
-      <button id="prevBtn">←</button>
-      <span id="counter">1 / 9</span>
-      <button id="nextBtn">→</button>
+      <button id="prevBtn" aria-label="Vorherige Slide">←</button>
+      <span id="counter" style="font-weight:800">1 / 9</span>
+      <button id="nextBtn" aria-label="Nächste Slide">→</button>
+
+      <label class="pill" title="Autoplay wie TikTok">
+        <input id="autoplayToggle" type="checkbox" checked />
+        Autoplay
+      </label>
+
+      <label class="pill" title="Zeit pro Slide">
+        Speed
+        <select id="speedSelect" style="border:0;background:transparent;font-weight:900;cursor:pointer">
+          <option value="1800">1.8s</option>
+          <option value="2500" selected>2.5s</option>
+          <option value="3500">3.5s</option>
+          <option value="5000">5.0s</option>
+        </select>
+      </label>
     </div>
   </div>
 </header>
 
 <main>
-  <div class="stage">
+  <div class="stage" id="stage">
     <div class="viewport" id="viewport"></div>
+
+    <div class="metaRow">
+      <span id="status">Autoplay läuft…</span>
+    </div>
+
+    <!-- progress bar (viral feel) -->
+    <div style="height:3px;background:rgba(0,0,0,.06);">
+      <div id="progress" style="height:3px;width:0;background:#111;transition:none;"></div>
+    </div>
+
     <div class="dots" id="dots"></div>
   </div>
 </main>
 
+<div class="hint">
+  Repo: <code>index.html</code> + <code>/assets/1.png</code> … <code>/assets/9.png</code>.<br/>
+  Tipp: Wenn du es NOCH kleiner willst: im CSS <code>.viewport max-width</code> auf 380 oder 340 setzen.
+</div>
+
 <script>
-  // 🔥 Auto-load assets/1.png … 9.png
+  // Auto-load assets/1.png … 9.png
   const slides = Array.from({length:9}, (_,i)=>({
     id:i+1,
     src:`assets/${i+1}.png`
@@ -146,8 +235,30 @@
   const viewport = document.getElementById("viewport");
   const dots = document.getElementById("dots");
   const counter = document.getElementById("counter");
+  const statusEl = document.getElementById("status");
+  const progressEl = document.getElementById("progress");
+
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const autoplayToggle = document.getElementById("autoplayToggle");
+  const speedSelect = document.getElementById("speedSelect");
 
   let current = 0;
+  let autoplayTimer = null;
+  let raf = null;
+  let slideStart = 0;
+
+  function placeholderDataUri(id){
+    return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600">
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <text x="50%" y="50%" text-anchor="middle"
+          font-family="Arial" font-size="38" fill="#999">
+          Missing: assets/${id}.png
+        </text>
+      </svg>
+    `);
+  }
 
   function render(){
     viewport.innerHTML="";
@@ -155,67 +266,129 @@
 
     slides.forEach((s,i)=>{
       const slide = document.createElement("div");
-      slide.className="slide"+(i===current?" active":"");
+      slide.className = "slide" + (i===current ? " active" : "");
 
-      const img=document.createElement("img");
-      img.src=s.src;
-      img.alt=`Slide ${s.id}`;
-
-      img.onerror=()=>{
-        img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600">
-            <rect width="100%" height="100%" fill="#ffffff"/>
-            <text x="50%" y="50%" text-anchor="middle"
-              font-family="Arial" font-size="40" fill="#999">
-              Missing: assets/${s.id}.png
-            </text>
-          </svg>
-        `);
-      };
+      const img = document.createElement("img");
+      img.src = s.src;
+      img.alt = `Slide ${s.id}`;
+      img.onerror = () => img.src = placeholderDataUri(s.id);
 
       slide.appendChild(img);
       viewport.appendChild(slide);
 
-      const dot=document.createElement("button");
-      dot.className="dot"+(i===current?" active":"");
-      dot.onclick=()=>go(i);
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i===current ? " active" : "");
+      dot.type = "button";
+      dot.ariaLabel = `Go to slide ${i+1}`;
+      dot.onclick = () => go(i, true);
       dots.appendChild(dot);
     });
 
-    counter.textContent=`${current+1} / ${slides.length}`;
+    counter.textContent = `${current+1} / ${slides.length}`;
   }
 
-  function go(i){
-    current=(i+slides.length)%slides.length;
+  function go(i, userAction=false){
+    current = (i + slides.length) % slides.length;
     render();
+
+    // reset progress timing
+    slideStart = performance.now();
+    progressEl.style.width = "0%";
+    if(userAction) kickAutoplay(); // keep it feeling "tiktok" after interactions
   }
 
-  document.getElementById("nextBtn").onclick=()=>go(current+1);
-  document.getElementById("prevBtn").onclick=()=>go(current-1);
+  function next(user=false){ go(current+1, user); }
+  function prev(user=false){ go(current-1, user); }
 
-  // keyboard
-  window.addEventListener("keydown",e=>{
-    if(e.key==="ArrowRight") go(current+1);
-    if(e.key==="ArrowLeft") go(current-1);
-  });
+  // --- Viral mode: autoplay + loop + progress bar ---
+  function getSpeedMs(){
+    return Number(speedSelect.value || 2500);
+  }
 
-  // swipe mobile
-  let startX=null;
-  viewport.addEventListener("touchstart",e=>{
-    startX=e.touches[0].clientX;
-  },{passive:true});
+  function stopAutoplay(){
+    if(autoplayTimer){ clearInterval(autoplayTimer); autoplayTimer=null; }
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+    progressEl.style.width = "0%";
+    statusEl.textContent = "Autoplay pausiert.";
+  }
 
-  viewport.addEventListener("touchend",e=>{
-    if(startX==null) return;
-    const dx=e.changedTouches[0].clientX-startX;
-    if(Math.abs(dx)>40){
-      dx<0?go(current+1):go(current-1);
+  function startAutoplay(){
+    stopAutoplay();
+    slideStart = performance.now();
+    statusEl.textContent = "Autoplay läuft…";
+
+    const speed = getSpeedMs();
+
+    autoplayTimer = setInterval(()=> next(false), speed);
+
+    const tick = (t)=>{
+      const elapsed = t - slideStart;
+      const pct = Math.min(100, (elapsed / speed) * 100);
+      progressEl.style.width = pct + "%";
+
+      // if we advanced via timer, reset slideStart in render() is not called automatically,
+      // so we detect loop by checking pct == 100 and then reset on next frame
+      if(pct >= 100){
+        slideStart = t;
+        progressEl.style.width = "0%";
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  }
+
+  function kickAutoplay(){
+    if(!autoplayToggle.checked) return;
+    startAutoplay();
+  }
+
+  // Buttons
+  prevBtn.onclick = ()=> prev(true);
+  nextBtn.onclick = ()=> next(true);
+
+  // Keyboard
+  window.addEventListener("keydown", e=>{
+    if(e.key==="ArrowRight") next(true);
+    if(e.key==="ArrowLeft") prev(true);
+    if(e.key===" ") {
+      e.preventDefault();
+      autoplayToggle.checked = !autoplayToggle.checked;
+      autoplayToggle.dispatchEvent(new Event("change"));
     }
-    startX=null;
   });
 
-  render();
-</script>
+  // Swipe
+  const stage = document.getElementById("stage");
+  let startX = null;
+  viewport.addEventListener("touchstart", e=>{
+    if(!e.touches || e.touches.length!==1) return;
+    startX = e.touches[0].clientX;
+  }, {passive:true});
 
+  viewport.addEventListener("touchend", e=>{
+    if(startX==null) return;
+    const endX = e.changedTouches[0].clientX;
+    const dx = endX - startX;
+    startX = null;
+    if(Math.abs(dx) > 40){
+      dx < 0 ? next(true) : prev(true);
+    }
+  });
+
+  // Toggle autoplay
+  autoplayToggle.addEventListener("change", ()=>{
+    if(autoplayToggle.checked) startAutoplay();
+    else stopAutoplay();
+  });
+
+  // Speed change restarts autoplay if on
+  speedSelect.addEventListener("change", ()=>{
+    if(autoplayToggle.checked) startAutoplay();
+  });
+
+  // Init
+  render();
+  if(autoplayToggle.checked) startAutoplay();
+</script>
 </body>
 </html>
