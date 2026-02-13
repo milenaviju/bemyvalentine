@@ -3,75 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kitty Explains 🐱</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-
+  <title>Kitty Explains</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <main class="wrap">
+    <div class="grid" id="grid"></div>
+  </main>
 
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div class="brand-text">
-        <div class="brand-title">Kitty Explains</div>
-        <div class="brand-sub">reel showcase · swipe friendly</div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="nav-btn" id="prevBtn" aria-label="Vorherige Slide">←</button>
-      <div class="counter" id="counter">1 / 10</div>
-      <button class="nav-btn" id="nextBtn" aria-label="Nächste Slide">→</button>
-    </div>
-  </div>
-</header>
-
-<main class="main">
-  <section class="stage">
-    <div class="reel">
-
-      <div class="reel-top">
-        <div class="insta-left">
-          <div class="avatar" aria-hidden="true"></div>
-          <div class="insta-meta">
-            <div class="insta-name">kitty.explains</div>
-            <div class="insta-sub">wholesome dev edition</div>
-          </div>
-        </div>
-
-        <button class="follow-btn" type="button" aria-label="Follow (deko)">Follow</button>
-      </div>
-
-      <div class="viewport" id="viewport" aria-label="Slides"></div>
-
-      <div class="reel-bottom" id="reelBottom">
-        <!-- hearts will be injected here -->
-        <div class="actions" aria-label="Actions (deko)">
-          <button class="icon-btn" id="likeBtn" type="button" aria-label="Like">❤</button>
-          <button class="icon-btn" type="button" aria-label="Comment">💬</button>
-          <button class="icon-btn" type="button" aria-label="Share">✈️</button>
-        </div>
-
-        <div class="hint">
-          <span class="kbd">←</span><span class="kbd">→</span> oder wischen ·
-          <span class="muted">assets/1.png … 10.png</span>
-        </div>
-      </div>
-
-      <div class="dots" id="dots" aria-label="Slide navigation"></div>
-    </div>
-
-    <div class="fineprint">
-      Tipp: Sieht am besten im Handy-Browser aus ✨
-    </div>
-  </section>
-</main>
-
-<script src="script.js"></script>
+  <script src="script.js" defer></script>
 </body>
 </html>
