@@ -1,6 +1,6 @@
 const TOTAL_SLIDES = 10;
 
-const slides = Array.from({length: TOTAL_SLIDES}, (_, i) => ({
+const slides = Array.from({ length: TOTAL_SLIDES }, (_, i) => ({
   id: i + 1,
   src: `assets/${i + 1}.png`
 }));
@@ -8,14 +8,16 @@ const slides = Array.from({length: TOTAL_SLIDES}, (_, i) => ({
 const viewport = document.getElementById("viewport");
 const dots = document.getElementById("dots");
 const counter = document.getElementById("counter");
+
 const likeBtn = document.getElementById("likeBtn");
+const reelBottom = document.getElementById("reelBottom");
 
 let current = 0;
 
-// simple preload for smoother swipe
+// Preload around current for smoother swipe
 function preloadAround(index){
-  const ids = [index, index+1, index-1].map(i => (i + slides.length) % slides.length);
-  ids.forEach(i=>{
+  const ids = [index, index + 1, index - 1].map(i => (i + slides.length) % slides.length);
+  ids.forEach(i => {
     const img = new Image();
     img.src = slides[i].src;
   });
@@ -31,6 +33,38 @@ function placeholder(id){
       </text>
     </svg>
   `);
+}
+
+function ensureHeartsLayer(){
+  let layer = reelBottom.querySelector(".hearts-layer");
+  if(!layer){
+    layer = document.createElement("div");
+    layer.className = "hearts-layer";
+    reelBottom.appendChild(layer);
+  }
+  return layer;
+}
+
+function spawnHearts(count = 6){
+  const layer = ensureHeartsLayer();
+  const hearts = ["💖","💗","💞","💕","💘"];
+
+  for(let i=0;i<count;i++){
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+    const drift = (Math.random() * 120) - 60; // -60..60
+    const delay = Math.random() * 180;        // 0..180ms
+    const size = 14 + Math.random() * 10;     // 14..24px
+
+    h.style.left = `${18 + drift}px`;
+    h.style.animationDelay = `${delay}ms`;
+    h.style.fontSize = `${size}px`;
+
+    layer.appendChild(h);
+    h.addEventListener("animationend", () => h.remove());
+  }
 }
 
 function render(){
@@ -53,7 +87,7 @@ function render(){
     dot.className = "dot" + (i === current ? " active" : "");
     dot.type = "button";
     dot.ariaLabel = `Go to slide ${i + 1}`;
-    dot.onclick = () => go(i);
+    dot.addEventListener("click", () => go(i));
     dots.appendChild(dot);
   });
 
@@ -66,22 +100,23 @@ function go(i){
   render();
 }
 
-document.getElementById("nextBtn").onclick = () => go(current + 1);
-document.getElementById("prevBtn").onclick = () => go(current - 1);
+// Nav buttons
+document.getElementById("nextBtn").addEventListener("click", () => go(current + 1));
+document.getElementById("prevBtn").addEventListener("click", () => go(current - 1));
 
-// keyboard
-window.addEventListener("keydown", e => {
+// Keyboard
+window.addEventListener("keydown", (e) => {
   if(e.key === "ArrowRight") go(current + 1);
   if(e.key === "ArrowLeft") go(current - 1);
 });
 
-// swipe
+// Swipe
 let startX = null;
-viewport.addEventListener("touchstart", e => {
+viewport.addEventListener("touchstart", (e) => {
   startX = e.touches[0].clientX;
-}, {passive:true});
+}, { passive:true });
 
-viewport.addEventListener("touchend", e => {
+viewport.addEventListener("touchend", (e) => {
   if(startX == null) return;
   const dx = e.changedTouches[0].clientX - startX;
   if(Math.abs(dx) > 40){
@@ -90,11 +125,13 @@ viewport.addEventListener("touchend", e => {
   startX = null;
 });
 
-// cute like toggle
+// Like + heart magic
 if(likeBtn){
   likeBtn.addEventListener("click", () => {
     likeBtn.classList.toggle("liked");
+    spawnHearts(likeBtn.classList.contains("liked") ? 10 : 6);
   });
 }
 
+// init
 render();
