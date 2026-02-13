@@ -5,12 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Kitty Explains</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <main class="wrap">
-    <div class="grid" id="grid"></div>
-  </main>
+    <section class="stage" aria-label="Kitty slides">
+      <button class="nav nav-left" id="prev" type="button" aria-label="Previous slide"></button>
 
-  <script src="script.js" defer></script>
+      <div class="reel" id="reel">
+        <img id="slideImg" alt="Kitty slide" />
+      </div>
+
+      <button class="nav nav-right" id="next" type="button" aria-label="Next slide"></button>
+    </section>
+  </main>
 </body>
 </html>
