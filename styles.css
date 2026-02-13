@@ -1,49 +1,48 @@
 :root{
   --bg1:#ffffff;
   --bg2:#f6f7fb;
-  --card:#ffffff;
   --border: rgba(0,0,0,.06);
-  --shadow: 0 18px 60px rgba(0,0,0,.08);
-  --radius: 22px;
+  --shadow: 0 18px 60px rgba(0,0,0,.10);
+  --radius: 24px;
 }
 
 *{ box-sizing:border-box; }
 
 body{
   margin:0;
+  min-height:100vh;
   background:
     radial-gradient(900px 520px at 10% 0%, rgba(255,192,203,.18), transparent 60%),
     radial-gradient(900px 520px at 90% 0%, rgba(199,210,254,.18), transparent 60%),
     linear-gradient(180deg,var(--bg1),var(--bg2));
-  min-height:100vh;
 }
 
 .wrap{
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 28px 16px 42px;
-}
-
-.grid{
+  min-height:100vh;
   display:grid;
-  grid-template-columns: 1fr;
-  gap: 22px;
-  justify-items: center;
+  place-items:center;
+  padding: 26px 16px;
 }
 
-/* nice “reel card” */
-.card{
-  width: 100%;
-  max-width: 420px;
+.stage{
+  display:grid;
+  grid-template-columns: 44px min(420px, 92vw) 44px;
+  align-items:center;
+  gap: 12px;
+}
+
+/* the reel card */
+.reel{
+  width:100%;
   aspect-ratio: 9 / 16;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background:#fff;
+  border:1px solid var(--border);
   border-radius: var(--radius);
   overflow:hidden;
   box-shadow: var(--shadow);
 }
 
-.card img{
+.reel img{
   width:100%;
   height:100%;
   object-fit: contain;
@@ -51,10 +50,50 @@ body{
   background:#fff;
 }
 
-/* on wider screens, show 2 columns (still clean) */
-@media (min-width: 920px){
-  .grid{
-    grid-template-columns: 1fr 1fr;
-    justify-items: center;
-  }
+/* minimal nav: invisible until hover/focus */
+.nav{
+  width:44px;
+  height:44px;
+  border-radius: 999px;
+  border:1px solid rgba(0,0,0,.08);
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(10px);
+  cursor:pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.10);
+  opacity: 0;
+  transform: translateY(0);
+  transition: opacity .18s ease, transform .18s ease, background .18s ease;
+  position: relative;
+}
+
+.stage:hover .nav,
+.nav:focus-visible{
+  opacity: 1;
+}
+
+.nav:hover{
+  background: rgba(255,255,255,.9);
+  transform: translateY(-1px);
+}
+
+/* draw chevrons without text */
+.nav::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width:10px;
+  height:10px;
+  border-right: 3px solid rgba(0,0,0,.55);
+  border-bottom: 3px solid rgba(0,0,0,.55);
+  transform: rotate(135deg);
+}
+
+.nav-right::before{
+  transform: rotate(-45deg);
+}
+
+/* mobile: always show nav a bit (still subtle) */
+@media (max-width: 520px){
+  .nav{ opacity: .9; }
 }
