@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kitty Explains – Slides</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#111;
+      --muted:#666;
+      --card:#f6f6f7;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: linear-gradient(180deg, #fff, #fafafa);
+      color:var(--ink);
+    }
+    header{
+      position: sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.7);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+    .bar{
+      max-width:1100px;
+      margin:0 auto;
+      padding: 12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .title strong{font-size:15px}
+    .title span{font-size:12px;color:var(--muted)}
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    button{
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      color:var(--ink);
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    button:active{transform: translateY(1px)}
+    .counter{
+      font-size:12px;
+      color:var(--muted);
+      padding: 0 6px;
+    }
+
+    main{
+      max-width:1100px;
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+
+    .stageWrap{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .stage{
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      touch-action: pan-y;
+    }
+
+    /* 9:16 viewport */
+    .slideViewport{
+      width: 100%;
+      max-height: 82vh;
+      aspect-ratio: 9 / 16;
+      margin: 0 auto;
+      position: relative;
+      background: #fff;
+    }
+
+    .slide{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      transform: translateX(12px);
+      transition: opacity .22s ease, transform .22s ease;
+      background:#fff;
+    }
+    .slide.active{
+      opacity:1;
+      transform: translateX(0);
+      z-index:2;
+    }
+
+    .slide img{
+      width:100%;
+      height:100%;
+      object-fit: contain; /* keeps white background clean */
+      display:block;
+      background:#fff;
+    }
+
+    /* Text overlay – lots of empty space at top is already in images, but we keep overlay style consistent */
+    .textOverlay{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding: 34px 24px 24px;
+      gap:10px;
+      text-align:center;
+    }
+    .topText{
+      max-width: 92%;
+      font-weight: 800;
+      color:#000;
+      font-size: clamp(18px, 2.6vw, 30px);
+      line-height:1.15;
+    }
+    .bodyText{
+      max-width: 92%;
+      font-weight: 700;
+      color:#000;
+      font-size: clamp(14px, 2.0vw, 22px);
+      line-height:1.25;
+      white-space: pre-line;
+    }
+
+    .dots{
+      display:flex;
+      gap:8px;
+      padding: 10px 10px 14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      border-top:1px solid rgba(0,0,0,.06);
+      background: rgba(250,250,250,.75);
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      border:1px solid rgba(0,0,0,.2);
+      background:#fff;
+      cursor:pointer;
+      padding:0;
+    }
+    .dot.active{background:#111;border-color:#111}
+
+    details{
+      border:1px solid rgba(0,0,0,.08);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+    details > summary{
+      cursor:pointer;
+      font-weight:800;
+      list-style:none;
+      outline:none;
+    }
+    details > summary::-webkit-details-marker{display:none}
+
+    .panel{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 120px 1fr;
+      gap:10px;
+      align-items:center;
+    }
+    label{font-size:12px;color:var(--muted);font-weight:700}
+    input[type="text"], textarea, select{
+      width:100%;
+      border:1px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      background:#fff;
+    }
+    textarea{min-height:78px;resize:vertical}
+    .hint{font-size:12px;color:var(--muted);line-height:1.3}
+    .fileRow{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    input[type="file"]{font-size:12px}
+    .smallBtn{padding:8px 10px;font-weight:800}
+
+    @media (min-width: 980px){
+      main{grid-template-columns: 1.2fr .8fr; align-items:start;}
+      .stageWrap{grid-column:1}
+      .side{grid-column:2; position:sticky; top:64px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="title">
+      <strong>Kitty Explains – Slides</strong>
+      <span>←/→, Swipe, Dots · Images in /assets as 1–9.png</span>
+    </div>
+    <div class="controls">
+      <button id="prevBtn" aria-label="Vorherige Slide">← Prev</button>
+      <span class="counter" id="counter">Slide 1 / 9</span>
+      <button id="nextBtn" aria-label="Nächste Slide">Next →</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: Stage -->
+  <div class="stageWrap">
+    <div class="stage" id="stage">
+      <div class="slideViewport" id="viewport"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <p class="hint">
+      Repo-Struktur:
+      <code>index.html</code> + <code>/assets/1.png</code> … <code>/assets/9.png</code>.
+      (Upload im Panel ist optional & nur lokal im Browser.)
+    </p>
+  </div>
+
+  <!-- RIGHT: Editor -->
+  <div class="side">
+    <details open>
+      <summary>Slide Editor (optional)</summary>
+      <div class="panel">
+        <div class="row">
+          <label>Slide</label>
+          <select id="slideSelect"></select>
+        </div>
+
+        <div class="row">
+          <label>Top Text</label>
+          <input id="topTextInput" type="text" />
+        </div>
+
+        <div class="row">
+          <label>Body Text</label>
+          <textarea id="bodyTextInput"></textarea>
+        </div>
+
+        <div class="row">
+          <label>Image Path</label>
+          <input id="imagePathInput" type="text" placeholder="assets/1.png" />
+        </div>
+
+        <div class="row">
+          <label>Upload</label>
+          <div class="fileRow">
+            <input id="fileInput" type="file" accept="image/*" />
+            <button class="smallBtn" id="clearLocalBtn" type="button">Clear local</button>
+          </div>
+        </div>
+
+        <div class="hint">
+          Für GitHub Pages: Bilder ins Repo legen (assets/1.png ... 9.png).<br/>
+          Editor ist nur zum schnellen Testen/Ändern.
+        </div>
+      </div>
+    </details>
+  </div>
+</main>
+
+<script>
+  // --- Slides: auto load images from /assets/1.png ... /assets/9.png ---
+  const texts = [
+    { top: "Warum ich dich liebe?", body: "A simple kitty explanation." },
+    { top: "", body: "You are sweet.\nI cannot be mad at you.\nEven when I try.\nIt does not work." },
+    { top: "", body: "You make me warm.\nI feel safe.\nPurrrrfect." },
+    { top: "", body: "You are sport king.\nYou can do all the balls.\nKitty very impressed." },
+    { top: "", body: "You drive.\nI princess.\nVery good system." },
+    { top: "", body: "You do not like drilling.\nBut for me…\nYou become BOHR-MAN.\nVery strong." },
+    { top: "", body: "We have wine at home.\nBecause of you.\nImportant skill." },
+    { top: "", body: "You forget where things are.\nI know.\nI feel smart.\nGood teamwork." },
+    { top: "", body: "You make my heart full.\nVery full.\nYou best Kitty.\nMy kitty." }
+  ];
+
+  const slidesData = Array.from({ length: 9 }, (_, i) => ({
+    id: i + 1,
+    image: `assets/${i + 1}.png`,
+    top: texts[i].top,
+    body: texts[i].body
+  }));
+
+  // local uploads (in-memory blob urls) by slide id
+  const localImages = new Map();
+
+  const viewport = document.getElementById("viewport");
+  const dots = document.getElementById("dots");
+  const counter = document.getElementById("counter");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  const slideSelect = document.getElementById("slideSelect");
+  const topTextInput = document.getElementById("topTextInput");
+  const bodyTextInput = document.getElementById("bodyTextInput");
+  const imagePathInput = document.getElementById("imagePathInput");
+  const fileInput = document.getElementById("fileInput");
+  const clearLocalBtn = document.getElementById("clearLocalBtn");
+
+  let currentIndex = 0;
+
+  function placeholderDataUri(slideId){
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600">
+        <rect width="100%" height="100%" fill="#ffffff"/>
+        <rect x="60" y="260" width="780" height="1280" rx="36" fill="#f6f6f7" stroke="#e5e5e7"/>
+        <text x="50%" y="52%" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="40" font-weight="800" fill="#666">
+          Missing image
+        </text>
+        <text x="50%" y="57%" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="24" font-weight="700" fill="#888">
+          assets/${slideId}.png
+        </text>
+      </svg>
+    `);
+  }
+
+  function makeSlideEl(slide, index){
+    const el = document.createElement("div");
+    el.className = "slide";
+    el.dataset.index = index;
+
+    const img = document.createElement("img");
+    img.alt = `Slide ${slide.id}`;
+
+    const src = localImages.get(slide.id) || slide.image || "";
+    img.src = src || placeholderDataUri(slide.id);
+
+    // if asset missing, fallback to placeholder
+    img.addEventListener("error", () => {
+      img.src = placeholderDataUri(slide.id);
+    }, { once: true });
+
+    const overlay = document.createElement("div");
+    overlay.className = "textOverlay";
+
+    const top = document.createElement("div");
+    top.className = "topText";
+    top.textContent = slide.top || "";
+
+    const body = document.createElement("div");
+    body.className = "bodyText";
+    body.textContent = slide.body || "";
+
+    overlay.appendChild(top);
+    overlay.appendChild(body);
+
+    el.appendChild(img);
+    el.appendChild(overlay);
+    return el;
+  }
+
+  function render(){
+    viewport.innerHTML = "";
+    dots.innerHTML = "";
+
+    slidesData.forEach((slide, i) => {
+      const slideEl = makeSlideEl(slide, i);
+      if(i === currentIndex) slideEl.classList.add("active");
+      viewport.appendChild(slideEl);
+
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i === currentIndex ? " active" : "");
+      dot.type = "button";
+      dot.ariaLabel = `Go to slide ${i+1}`;
+      dot.addEventListener("click", () => goTo(i));
+      dots.appendChild(dot);
+    });
+
+    counter.textContent = `Slide ${currentIndex+1} / ${slidesData.length}`;
+
+    // sync editor
+    slideSelect.value = String(currentIndex);
+    topTextInput.value = slidesData[currentIndex].top || "";
+    bodyTextInput.value = slidesData[currentIndex].body || "";
+    imagePathInput.value = slidesData[currentIndex].image || "";
+
+    fileInput.value = "";
+  }
+
+  function goTo(i){
+    currentIndex = (i + slidesData.length) % slidesData.length;
+    render();
+  }
+  function next(){ goTo(currentIndex + 1); }
+  function prev(){ goTo(currentIndex - 1); }
+
+  // Buttons + keyboard
+  nextBtn.addEventListener("click", next);
+  prevBtn.addEventListener("click", prev);
+  window.addEventListener("keydown", (e) => {
+    if(e.key === "ArrowRight") next();
+    if(e.key === "ArrowLeft") prev();
+  });
+
+  // Swipe
+  const stage = document.getElementById("stage");
+  let startX = null;
+  stage.addEventListener("touchstart", (e) => {
+    if(!e.touches || e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+  stage.addEventListener("touchend", (e) => {
+    if(startX == null) return;
+    const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : startX;
+    const dx = endX - startX;
+    startX = null;
+    if(Math.abs(dx) > 40) dx < 0 ? next() : prev();
+  });
+
+  // Select options
+  function initSelect(){
+    slideSelect.innerHTML = "";
+    slidesData.forEach((s, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = `Slide ${s.id}`;
+      slideSelect.appendChild(opt);
+    });
+  }
+  slideSelect.addEventListener("change", () => goTo(Number(slideSelect.value)));
+
+  // Editor bindings
+  topTextInput.addEventListener("input", () => {
+    slidesData[currentIndex].top = topTextInput.value;
+    render();
+  });
+  bodyTextInput.addEventListener("input", () => {
+    slidesData[currentIndex].body = bodyTextInput.value;
+    render();
+  });
+  imagePathInput.addEventListener("input", () => {
+    slidesData[currentIndex].image = imagePathInput.value.trim() || `assets/${slidesData[currentIndex].id}.png`;
+    render();
+  });
+
+  // Local upload (optional)
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+
+    const id = slidesData[currentIndex].id;
+    if(localImages.has(id)){
+      try{ URL.revokeObjectURL(localImages.get(id)); }catch{}
+    }
+    localImages.set(id, url);
+    render();
+  });
+
+  clearLocalBtn.addEventListener("click", () => {
+    const id = slidesData[currentIndex].id;
+    if(localImages.has(id)){
+      try{ URL.revokeObjectURL(localImages.get(id)); }catch{}
+      localImages.delete(id);
+    }
+    render();
+  });
+
+  initSelect();
+  render();
+</script>
+</body>
+</html>
